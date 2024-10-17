@@ -39,10 +39,10 @@ RUN apt-get update \
     && apt-get -y install git iproute2 procps lsb-release \
     && apt-get -y install mariadb-client \
     && apt-get -y install libpng-dev \
-\
+    \
     # Install extensions (optional)
     && docker-php-ext-install pdo_mysql gd \
-\
+    \
     # Install composer
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
@@ -79,7 +79,7 @@ RUN composer install --working-dir=${HASHTOPOLIS_DOCUMENT_ROOT}/..
 
 ENV DEBIAN_FRONTEND=dialog
 COPY docker-entrypoint.sh /usr/local/bin
-
+RUN sed -i 's/Listen 80/Listen 8080/' /etc/apache2/ports.conf
 # Setting the hashtopolis document root is done at build time. Because the www-data user cannot write to the apache config folder.
 COPY 000-default.conf /tmp/
 RUN envsubst '${HASHTOPOLIS_DOCUMENT_ROOT} ${HASHTOPOLIS_BINARIES_PATH}' < /tmp/000-default.conf > /etc/apache2/sites-available/000-default.conf && rm /tmp/000-default.conf
@@ -97,16 +97,16 @@ RUN yes | pecl install xdebug \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.mode = debug" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.start_with_request = yes" >> /usr/local/etc/php/conf.d/xdebug.ini \
-	&& echo "xdebug.client_port = 9003" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.client_port = 9003" >> /usr/local/etc/php/conf.d/xdebug.ini \
     \
     # Configuring PHP
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
-	&& echo "display_errors = on" >> /usr/local/etc/php/conf.d/custom.ini \
-	&& echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
-	&& echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
-	&& echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
-	&& echo "log_errors = On" >> /usr/local/etc/php/conf.d/custom.ini \
-	&& echo "error_log = /dev/stderr" >> /usr/local/etc/php/conf.d/custom.ini
+    && echo "display_errors = on" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "log_errors = On" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "error_log = /dev/stderr" >> /usr/local/etc/php/conf.d/custom.ini
 
 # Install python (unittests)
 RUN apt-get update \
