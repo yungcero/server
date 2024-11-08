@@ -45,7 +45,8 @@ class HashlistUtils {
    */
   public static function getHash($hash, $user) {
     $qF = new QueryFilter(Hash::HASH, $hash, "=");
-    $hashes = Factory::getHashFactory()->filter([Factory::FILTER => $qF]);
+    $hashes = Factory::getHashBinaryFactory()->filter([Factory::FILTER => $qF]);
+    #$hashes = Factory::getHashFactory()->filter([Factory::FILTER => $qF]);
     foreach ($hashes as $hash) {
       if ($hash->getIsCracked() != 1) {
         continue;
